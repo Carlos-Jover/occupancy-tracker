@@ -24,6 +24,6 @@ public class EventRecord {
     }
 
     public String getFormattedRecord() {
-
+        return eventType + " || " + eventTime + " || " + occupancyAfter;
     }
 }
