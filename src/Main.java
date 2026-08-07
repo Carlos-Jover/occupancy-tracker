@@ -10,14 +10,15 @@ public class Main {
         System.out.println("2. Exit");
         System.out.println("3. Reset counter");
         System.out.println("4. Display current occupancy");
-        System.out.println("5. Help");
-        System.out.println("6. quit");
+        System.out.println("5. View event history");
+        System.out.println("6. Help");
+        System.out.println("7. quit");
         System.out.println();
         System.out.println("Enter the command you would like to complete: ");
 
         int input = keyboardInput.nextInt();
 
-        while (input != 6) {
+        while (input != 7) {
             if (input == 1) {
                 tracker.enter();
             } else if (input == 2) {
@@ -27,6 +28,14 @@ public class Main {
             } else if (input == 4) {
                 System.out.println("Current occupancy: " + tracker.getOccupancyCounter());
             } else if (input == 5) {
+                if (tracker.getEventHistory().isEmpty()) {
+                    System.out.println("No events have been recorded yet.");
+                } else {
+                    for (EventRecord eventRecord : tracker.getEventHistory()) {
+                        System.out.println(eventRecord.getFormattedRecord());
+                    }
+                }
+            } else if (input == 6) {
                 help();
             } else {
                 System.out.println("Input must be one of the available command numbers. Try again.");
@@ -46,7 +55,8 @@ public class Main {
         System.out.println("2. Exit");
         System.out.println("3. Reset counter");
         System.out.println("4. Display current occupancy");
-        System.out.println("5. Help");
-        System.out.println("6. quit");
+        System.out.println("5. View event history");
+        System.out.println("6. Help");
+        System.out.println("7. quit");
     }
 }

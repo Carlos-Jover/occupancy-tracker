@@ -12,3 +12,13 @@ All notable changes to this project will be documented in this file.
 - Added event history recording for occupancy changes.
 - Added validation for occupancy configuration values.
 - Updated the README with the project purpose, Version 1 goals, and future roadmap.
+
+## [0.2.0] - Event History Added
+
+### Added
+- Added a menu option to view occupancy event history.
+- Added formatted timestamps to occupancy events.
+- Added a message when no events have been recorded.
+
+### Changed
+- Improved event record formatting for readability.

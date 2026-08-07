@@ -1,4 +1,5 @@
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class EventRecord {
     private String eventType;
@@ -24,6 +25,8 @@ public class EventRecord {
     }
 
     public String getFormattedRecord() {
-        return eventType + " || " + eventTime + " || " + occupancyAfter;
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("hh:mm a");
+        String formattedTime = eventTime.format(format);
+        return String.format("%-15s || %s || Occupancy: %d", eventType, formattedTime, occupancyAfter);
     }
 }
