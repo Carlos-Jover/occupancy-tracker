@@ -55,7 +55,11 @@ public class Tracker {
     }
 
     public double getOccupancyPercentage() {
-        return ((double) occupancyCounter / highOccupancy) * 100;
+        double percent = ((double) occupancyCounter / highOccupancy) * 100;
+        if (percent > 100) {
+            percent = 100;
+        }
+        return percent;
     }
 
     private void recordEvent(String eventType) {

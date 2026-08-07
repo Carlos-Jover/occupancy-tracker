@@ -22,3 +22,13 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Improved event record formatting for readability.
+
+## [0.3.0] - Occupancy Percentage Bar Added and Customizing High Occupancy
+
+### Added
+- Added a visual occupancy percentage bar.
+- Added low, moderate, and high occupancy levels.
+- Added a menu option to configure the high occupancy level.
+
+### Changed
+- Capped the displayed occupancy percentage at 100%.
