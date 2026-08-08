@@ -32,3 +32,14 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Capped the displayed occupancy percentage at 100%.
+
+## [0.4.0] Manual Occupancy Correction Added and Input Verification
+
+### Added
+- Added manual occupancy correction.
+- Added a menu option to manually correct the current occupancy.
+- Added input validation to prevent non-integer input from crashing the program.
+- Added validation for occupancy values that cannot be negative.
+
+### Changed
+- Improved menu input handling for invalid values.

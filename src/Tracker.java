@@ -66,4 +66,11 @@ public class Tracker {
         EventRecord eventRecord = new EventRecord(eventType, LocalTime.now(), occupancyCounter);
         eventHistory.add(eventRecord);
     }
+
+    public void manualOccupancyCorrection(int newOccupancy) {
+        if (newOccupancy >= 0) {
+            occupancyCounter = newOccupancy;
+            recordEvent("Correction");
+        }
+    }
 }
