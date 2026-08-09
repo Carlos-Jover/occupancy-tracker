@@ -6,6 +6,8 @@ public class Main {
         Scanner keyboardInput = new Scanner(System.in);
         Tracker tracker = new Tracker(100);
 
+        tracker.systemStart();
+
         System.out.println("This is the occupancy tracker. To use it, enter the number of the command you would like to do. This is the list of available commands: ");
         System.out.println("1. Enter");
         System.out.println("2. Exit");
@@ -138,6 +140,7 @@ public class Main {
             }
         }
 
+        tracker.systemStop();
         keyboardInput.close();
     }
 

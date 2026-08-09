@@ -1,4 +1,7 @@
-import java.time.LocalTime;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Tracker {
@@ -36,6 +39,14 @@ public class Tracker {
         }
     }
 
+    public void systemStart() {
+        recordEvent("SYSTEM START");
+    }
+
+    public void systemStop() {
+        recordEvent("SYSTEM STOP");
+    }
+
     public void enter() {
         occupancyCounter++;
         recordEvent("Enter");
@@ -63,8 +74,16 @@ public class Tracker {
     }
 
     private void recordEvent(String eventType) {
-        EventRecord eventRecord = new EventRecord(eventType, LocalTime.now(), occupancyCounter);
+        EventRecord eventRecord = new EventRecord(eventType, LocalDateTime.now(), occupancyCounter);
         eventHistory.add(eventRecord);
+
+        try (PrintWriter printWriter = new PrintWriter(new FileWriter("Event_History.txt", true))){
+            printWriter.println(eventRecord.getFormattedRecord());
+
+        } catch (IOException exp) {
+            System.out.println("Something went wrong saving to file");
+            System.out.println(exp.getMessage());
+        }
     }
 
     public void manualOccupancyCorrection(int newOccupancy) {

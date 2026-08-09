@@ -1,14 +1,14 @@
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class EventRecord {
     private String eventType;
-    private LocalTime eventTime;
+    private LocalDateTime eventDateTime;
     private int occupancyAfter;
 
-    public EventRecord(String eventType, LocalTime eventTime, int occupancyAfter) {
+    public EventRecord(String eventType, LocalDateTime eventDateTime, int occupancyAfter) {
         this.eventType = eventType;
-        this.eventTime = eventTime;
+        this.eventDateTime = eventDateTime;
         this.occupancyAfter = occupancyAfter;
     }
 
@@ -16,17 +16,15 @@ public class EventRecord {
         return eventType;
     }
 
-    public LocalTime getEventTime() {
-        return eventTime;
-    }
+    public LocalDateTime getEventDateTime() { return eventDateTime; }
 
     public int getOccupancyAfter() {
         return occupancyAfter;
     }
 
     public String getFormattedRecord() {
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("hh:mm a");
-        String formattedTime = eventTime.format(format);
-        return String.format("%-15s || %s || Occupancy: %d", eventType, formattedTime, occupancyAfter);
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm a");
+        String formattedTime = eventDateTime.format(format);
+        return String.format("%-15s | %s | Occupancy: %d", eventType, formattedTime, occupancyAfter);
     }
 }

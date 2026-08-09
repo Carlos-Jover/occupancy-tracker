@@ -43,3 +43,12 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Improved menu input handling for invalid values.
+
+## [0.5.0] - Persistent Event History
+
+### Added
+- Added automatic event history saving to a file.
+- Added system start and system stop events.
+
+### Changed
+- Added the date to event records.
