@@ -52,3 +52,16 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Added the date to event records.
+
+## [0.6.0] - Code Refactoring
+
+### Added
+
+- Added reusable integer input validation.
+- Added methods for displaying the occupancy percentage bar, occupancy level, and event history.
+
+### Changed
+
+- Refactored the Main class to reduce repeated code.
+- Simplified integer input validation.
+- Improved the occupancy percentage bar calculation.

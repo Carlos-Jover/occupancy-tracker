@@ -2,7 +2,7 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main (String[] args) {
+    public static void main(String[] args) {
         Scanner keyboardInput = new Scanner(System.in);
         Tracker tracker = new Tracker(100);
 
@@ -21,18 +21,7 @@ public class Main {
         System.out.println();
         System.out.println("Enter the command you would like to complete: ");
 
-        while (!keyboardInput.hasNextInt()) {
-            System.out.println("Must input one of the command numbers (ex. 9).");
-            System.out.println("Enter the command you would like to complete: ");
-            keyboardInput.next();
-        }
-
-        int input = keyboardInput.nextInt();
-
-        while (input < 0) {
-            System.out.println("Input cannot be negative. Try again: ");
-            input = keyboardInput.nextInt();
-        }
+        int input = getValidInteger(keyboardInput, 1);
 
         while (input != 9) {
             if (input == 1) {
@@ -43,26 +32,13 @@ public class Main {
 
             } else if (input == 3) {
                 tracker.resetCounter();
+                System.out.println("Occupancy counter reset.");
 
             } else if (input == 4) {
                 System.out.println("Current occupancy: " + tracker.getOccupancyCounter());
                 System.out.println("Insert new occupancy: ");
 
-                int newOccupancy = -1;
-                boolean checkOccupancy = false;
-                while (!checkOccupancy) {
-                    try {
-                        newOccupancy = keyboardInput.nextInt();
-                        if (newOccupancy < 0) {
-                            System.out.println("Occupancy cannot be negative. Insert new occupancy:");
-                        } else {
-                            checkOccupancy = true;
-                        }
-                    } catch (InputMismatchException exp) {
-                        System.out.println("Error: Input should be an integer. Try again: ");
-                        keyboardInput.next();
-                    }
-                }
+                int newOccupancy = getValidInteger(keyboardInput, 0);
 
                 tracker.manualOccupancyCorrection(newOccupancy);
                 System.out.println("Occupancy corrected to: " + tracker.getOccupancyCounter());
@@ -73,49 +49,17 @@ public class Main {
                 double occupancyPercentage = tracker.getOccupancyPercentage();
                 System.out.printf("Occupancy level: %.0f%%\n", occupancyPercentage);
 
-                int percentBar = (int) occupancyPercentage / 5;
-                String hashtagRepeat = "#".repeat((int) percentBar);
-                String dashRepeat = "-".repeat(20 - (int) percentBar);
-
-                System.out.print("[");
-                System.out.print(hashtagRepeat);
-                System.out.print(dashRepeat);
-                System.out.println("]");
-
-                if (occupancyPercentage < 40)
-                    System.out.println("Low occupancy");
-                else if (occupancyPercentage < 70)
-                    System.out.println("Moderate occupancy");
-                else
-                    System.out.println("High occupancy");
+                displayOccupancyPercentageBar(occupancyPercentage);
+                displayLevelOfOccupancy(occupancyPercentage);
 
             } else if (input == 6) {
                 System.out.println("Insert high occupancy: ");
 
-                boolean checkHighOccupancy = false;
-                while (!checkHighOccupancy) {
-                    try {
-                        int newHighOccupancy = keyboardInput.nextInt();
-                        if (newHighOccupancy <= 0) {
-                            System.out.println("Occupancy cannot be 0 or less. Try again.");
-                        } else {
-                            tracker.setHighOccupancy(newHighOccupancy);
-                            checkHighOccupancy = true;
-                        }
-                    } catch (InputMismatchException exp){
-                        System.out.println("Error: Input should be an integer. Try again: ");
-                        keyboardInput.next();
-                    }
-                }
+                int newHighOccupancy = getValidInteger(keyboardInput, 1);
+                tracker.setHighOccupancy(newHighOccupancy);
 
             } else if (input == 7) {
-                if (tracker.getEventHistory().isEmpty()) {
-                    System.out.println("No events have been recorded yet.");
-                } else {
-                    for (EventRecord eventRecord : tracker.getEventHistory()) {
-                        System.out.println(eventRecord.getFormattedRecord());
-                    }
-                }
+                displayEventHistory(tracker);
 
             } else if (input == 8) {
                 help();
@@ -127,17 +71,7 @@ public class Main {
             System.out.println();
             System.out.println("Insert next command: ");
 
-            boolean checkInteger = false;
-            while (!checkInteger) {
-                try {
-                    input = keyboardInput.nextInt();
-                    checkInteger = true;
-                } catch (InputMismatchException exp) {
-                    System.out.println("Input must be one of the available command numbers. Try again.");
-                    System.out.println("Insert next command: ");
-                    keyboardInput.next();
-                }
-            }
+            input = getValidInteger(keyboardInput, 1);
         }
 
         tracker.systemStop();
@@ -155,5 +89,58 @@ public class Main {
         System.out.println("7. View event history");
         System.out.println("8. Help");
         System.out.println("9. quit");
+    }
+
+    public static void displayOccupancyPercentageBar(double occupancyPercentage) {
+        final int BAR_LENGTH = 20;
+
+        int percentBar = (int) ((occupancyPercentage / 100) * BAR_LENGTH);
+        String hashtagRepeat = "#".repeat(percentBar);
+        String dashRepeat = "-".repeat(BAR_LENGTH - percentBar);
+
+        System.out.print("[");
+        System.out.print(hashtagRepeat);
+        System.out.print(dashRepeat);
+        System.out.println("]");
+    }
+
+    public static void displayLevelOfOccupancy(double occupancyPercentage) {
+        if (occupancyPercentage < 40) {
+            System.out.println("Low occupancy");
+        } else if (occupancyPercentage < 70) {
+            System.out.println("Moderate occupancy");
+        } else {
+            System.out.println("High occupancy");
+        }
+    }
+
+    public static int getValidInteger(Scanner keyboardInput, int minimumValue) {
+        boolean checkValidation = false;
+
+        int value = -1;
+
+        while (!checkValidation) {
+            try {
+                value = keyboardInput.nextInt();
+                if (value < minimumValue) {
+                    System.out.println("Input cannot be less than " + minimumValue + ".");
+                    System.out.println("Try again: ");
+                } else {
+                    checkValidation = true;
+                }
+
+            } catch (InputMismatchException exp) {
+                System.out.println("Error: Input should be an integer.");
+                System.out.println("Try again: ");
+                keyboardInput.next();
+            }
+        }
+        return value;
+    }
+
+    public static void displayEventHistory(Tracker tracker) {
+        for (EventRecord eventRecord : tracker.getEventHistory()) {
+            System.out.println(eventRecord.getFormattedRecord());
+        }
     }
 }
