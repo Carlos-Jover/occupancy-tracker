@@ -1,8 +1,7 @@
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Tracker {
     private int occupancyCounter;
@@ -90,6 +89,41 @@ public class Tracker {
         if (newOccupancy >= 0) {
             occupancyCounter = newOccupancy;
             recordEvent("Correction");
+        }
+    }
+
+    public boolean restoreOccupancyOnStartUp() {
+        try (Scanner reader = new Scanner(new File("Event_History.txt"))) {
+            String line = "";
+            while (reader.hasNextLine()) {
+                String currentLine = reader.nextLine();
+
+                if (!currentLine.isEmpty())
+                    line = currentLine;
+            }
+
+            if (line.isEmpty()) {
+                return false;
+            }
+
+            String[] splitLine = line.split("\\|");
+            String eventType = splitLine[0].trim();
+
+
+            if (eventType.equals("SYSTEM STOP")) {
+                occupancyCounter = 0;
+                return false;
+            } else {
+                String occupancyLine = splitLine[2].trim();
+                String[] occupancyLineSplit = occupancyLine.split(" ");
+                String occupancyText = occupancyLineSplit[1].trim();
+
+                occupancyCounter = Integer.parseInt(occupancyText);
+                recordEvent("SYSTEM RESTORED");
+                return true;
+            }
+        } catch (FileNotFoundException exp) {
+            return false;
         }
     }
 }

@@ -65,3 +65,14 @@ All notable changes to this project will be documented in this file.
 - Refactored the Main class to reduce repeated code.
 - Simplified integer input validation.
 - Improved the occupancy percentage bar calculation.
+
+## [0.7.0] - Startup State Restoration
+
+### Added
+- Added occupancy restoration after an unexpected program shutdown.
+- Added detection of normal shutdowns versus unexpected shutdowns.
+- Added `SYSTEM RESTORED` event recording when occupancy is recovered.
+
+### Changed
+- Updated startup behavior to restore the previous occupancy after an unexpected shutdown.
+- Normal startup now begins at zero after a recorded `SYSTEM STOP`.
