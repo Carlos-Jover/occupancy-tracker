@@ -76,3 +76,12 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - Updated startup behavior to restore the previous occupancy after an unexpected shutdown.
 - Normal startup now begins at zero after a recorded `SYSTEM STOP`.
+
+## [0.8.0] - Peak Occupancy Tracking
+
+### Added
+
+- Added peak occupancy tracking for the current session.
+- Added date and time tracking for when peak occupancy occurs.
+- Added peak occupancy information to the occupancy display.
+- Added peak occupancy tracking after crash restoration and manual occupancy correction.

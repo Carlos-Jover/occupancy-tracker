@@ -1,3 +1,4 @@
+import java.time.format.DateTimeFormatter;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -54,6 +55,16 @@ public class Main {
 
                 displayOccupancyPercentageBar(occupancyPercentage);
                 displayLevelOfOccupancy(occupancyPercentage);
+
+                System.out.println();
+
+                if (tracker.getPeakOccupancy() == 0) {
+                    System.out.println("Peak occupancy: " + tracker.getPeakOccupancy() + " | No peak recorded yet.");
+                } else {
+                    DateTimeFormatter format = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm a");
+                    String formattedPeakTime = tracker.getPeakOccupancyDateTime().format(format);
+                    System.out.println("Peak occupancy: " + tracker.getPeakOccupancy() + " | " + formattedPeakTime);
+                }
 
             } else if (input == 6) {
                 System.out.println("Insert high occupancy: ");

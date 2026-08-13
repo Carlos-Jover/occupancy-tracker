@@ -7,6 +7,8 @@ public class Tracker {
     private int occupancyCounter;
     private int highOccupancy;
     private ArrayList<EventRecord> eventHistory;
+    private int peakOccupancy;
+    private LocalDateTime peakOccupancyDateTime;
 
     public Tracker(int highOccupancy) {
         this.occupancyCounter = 0;
@@ -30,6 +32,14 @@ public class Tracker {
         return eventHistory;
     }
 
+    public int getPeakOccupancy() {
+        return peakOccupancy;
+    }
+
+    public LocalDateTime getPeakOccupancyDateTime() {
+        return peakOccupancyDateTime;
+    }
+
     public void setHighOccupancy(int highOccupancy) {
         if (highOccupancy > 0) {
             this.highOccupancy = highOccupancy;
@@ -49,6 +59,7 @@ public class Tracker {
     public void enter() {
         occupancyCounter++;
         recordEvent("Enter");
+        updatePeakOccupancy();
 
     }
 
@@ -89,6 +100,7 @@ public class Tracker {
         if (newOccupancy >= 0) {
             occupancyCounter = newOccupancy;
             recordEvent("Correction");
+            updatePeakOccupancy();
         }
     }
 
@@ -98,8 +110,9 @@ public class Tracker {
             while (reader.hasNextLine()) {
                 String currentLine = reader.nextLine();
 
-                if (!currentLine.isEmpty())
+                if (!currentLine.isEmpty()) {
                     line = currentLine;
+                }
             }
 
             if (line.isEmpty()) {
@@ -120,10 +133,18 @@ public class Tracker {
 
                 occupancyCounter = Integer.parseInt(occupancyText);
                 recordEvent("SYSTEM RESTORED");
+                updatePeakOccupancy();
                 return true;
             }
         } catch (FileNotFoundException exp) {
             return false;
+        }
+    }
+
+    private void updatePeakOccupancy() {
+        if (occupancyCounter > peakOccupancy) {
+            peakOccupancy = occupancyCounter;
+            peakOccupancyDateTime = LocalDateTime.now();
         }
     }
 }
