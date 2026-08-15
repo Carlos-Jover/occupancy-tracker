@@ -25,4 +25,8 @@ public class OperatingHours {
             this.closingTime = closingTime;
         }
     }
+
+    public boolean isTimeWithinOperatingHours(LocalTime currentTime) {
+        return (currentTime.isAfter(openingTime) || currentTime.equals(openingTime)) && currentTime.isBefore(closingTime);
+    }
 }

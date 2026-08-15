@@ -86,10 +86,18 @@ All notable changes to this project will be documented in this file.
 - Added peak occupancy information to the occupancy display.
 - Added peak occupancy tracking after crash restoration and manual occupancy correction.
 
-## [0.8.0] - Custom Operating Hours
+## [0.9.0] - Custom Operating Hours
 
 ### Added
 - Added a new class 'OperatingHours'.
 - Added a method for customizing the operating hours.
 - Added a menu option to customize the operating hours.
 - Added a menu option to view the current operating hours.
+
+## [0.10.0] - Open and Closed Hours Detection
+
+### Added
+- Added a method for checking whether a time is within the operating hours.
+
+### Changed
+- Updated the menu option for viewing operating hours to display whether the business is currently open or closed.

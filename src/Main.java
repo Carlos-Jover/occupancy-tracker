@@ -24,7 +24,7 @@ public class Main {
         System.out.println("5. Display current occupancy");
         System.out.println("6. Set high occupancy (default is 100)");
         System.out.println("7. View event history");
-        System.out.println("8. Set operating hours (default set to 12:00 am - 11:59 pm");
+        System.out.println("8. Set operating hours (default set to 12:00 am - 11:59 pm)");
         System.out.println("9. View operating hours");
         System.out.println("10. Help");
         System.out.println("11. quit");
@@ -91,6 +91,12 @@ public class Main {
             } else if (input == 9) {
                 displayOperatingTimes(operatingHours);
 
+                if (operatingHours.isTimeWithinOperatingHours(LocalTime.now())) {
+                    System.out.println("Business is open.");
+                } else {
+                    System.out.println("Business is closed.");
+                }
+
             } else if (input == 10) {
                 help();
 
@@ -117,8 +123,8 @@ public class Main {
         System.out.println("5. Display current occupancy");
         System.out.println("6. Set high occupancy");
         System.out.println("7. View event history");
-        System.out.println("8. Set operating hours.");
-        System.out.println("9. View operating hours.");
+        System.out.println("8. Set operating hours");
+        System.out.println("9. View operating hours");
         System.out.println("10. Help");
         System.out.println("11. quit");
     }
