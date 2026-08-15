@@ -1,4 +1,6 @@
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -6,6 +8,8 @@ public class Main {
     public static void main(String[] args) {
         Scanner keyboardInput = new Scanner(System.in);
         Tracker tracker = new Tracker(100);
+
+        OperatingHours operatingHours = new OperatingHours();
 
         boolean systemRestored = tracker.restoreOccupancyOnStartUp();
         if (!systemRestored) {
@@ -20,14 +24,16 @@ public class Main {
         System.out.println("5. Display current occupancy");
         System.out.println("6. Set high occupancy (default is 100)");
         System.out.println("7. View event history");
-        System.out.println("8. Help");
-        System.out.println("9. quit");
+        System.out.println("8. Set operating hours (default set to 12:00 am - 11:59 pm");
+        System.out.println("9. View operating hours");
+        System.out.println("10. Help");
+        System.out.println("11. quit");
         System.out.println();
         System.out.println("Enter the command you would like to complete: ");
 
         int input = getValidInteger(keyboardInput, 1);
 
-        while (input != 9) {
+        while (input != 11) {
             if (input == 1) {
                 tracker.enter();
 
@@ -76,6 +82,16 @@ public class Main {
                 displayEventHistory(tracker);
 
             } else if (input == 8) {
+                keyboardInput.nextLine();
+
+                setOperatingHours(keyboardInput, operatingHours);
+
+                displayOperatingTimes(operatingHours);
+
+            } else if (input == 9) {
+                displayOperatingTimes(operatingHours);
+
+            } else if (input == 10) {
                 help();
 
             } else {
@@ -101,8 +117,10 @@ public class Main {
         System.out.println("5. Display current occupancy");
         System.out.println("6. Set high occupancy");
         System.out.println("7. View event history");
-        System.out.println("8. Help");
-        System.out.println("9. quit");
+        System.out.println("8. Set operating hours.");
+        System.out.println("9. View operating hours.");
+        System.out.println("10. Help");
+        System.out.println("11. quit");
     }
 
     public static void displayOccupancyPercentageBar(double occupancyPercentage) {
@@ -155,6 +173,47 @@ public class Main {
     public static void displayEventHistory(Tracker tracker) {
         for (EventRecord eventRecord : tracker.getEventHistory()) {
             System.out.println(eventRecord.getFormattedRecord());
+        }
+    }
+
+    public static void displayOperatingTimes (OperatingHours operatingHours) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
+        String openingHour = operatingHours.getOpeningTime().format(formatter);
+        String closingHour = operatingHours.getClosingTime().format(formatter);
+        System.out.println("Operating hours are " + openingHour + " to " + closingHour);
+    }
+
+    public static void setOperatingHours (Scanner scanner, OperatingHours operatingHours) {
+        System.out.println("To input operating hours, follow the format hh:mm AM/PM (ex. 07:30 AM to 02:30 PM).");
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
+
+        boolean success = false;
+
+        while (!success) {
+            try {
+                System.out.println("Input opening time: ");
+
+                String openingTime = scanner.nextLine();
+                LocalTime openingHour = LocalTime.parse(openingTime, formatter);
+
+                System.out.println("Input closing time: ");
+
+                String closingTime = scanner.nextLine();
+                LocalTime closingHour = LocalTime.parse(closingTime, formatter);
+
+                operatingHours.setOperatingHours(openingHour, closingHour);
+
+                success = true;
+
+            } catch (DateTimeParseException exp) {
+                System.out.println("Input should be in format hh:mm AM/PM (ex. 07:30 AM to 02:30 PM).");
+                System.out.println("Try again: ");
+
+            } catch (IllegalArgumentException exp) {
+                System.out.println("Opening time must come before closing time.");
+                System.out.println("Try again: ");
+            }
         }
     }
 }

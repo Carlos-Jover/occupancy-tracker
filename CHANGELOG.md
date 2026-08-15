@@ -85,3 +85,11 @@ All notable changes to this project will be documented in this file.
 - Added date and time tracking for when peak occupancy occurs.
 - Added peak occupancy information to the occupancy display.
 - Added peak occupancy tracking after crash restoration and manual occupancy correction.
+
+## [0.8.0] - Custom Operating Hours
+
+### Added
+- Added a new class 'OperatingHours'.
+- Added a method for customizing the operating hours.
+- Added a menu option to customize the operating hours.
+- Added a menu option to view the current operating hours.
