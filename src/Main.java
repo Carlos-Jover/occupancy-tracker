@@ -80,6 +80,7 @@ public class Main {
 
             } else if (input == 7) {
                 displayEventHistory(tracker);
+                tracker.timeBetweenEvents();
 
             } else if (input == 8) {
                 keyboardInput.nextLine();

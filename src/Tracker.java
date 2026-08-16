@@ -1,4 +1,5 @@
 import java.io.*;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -145,6 +146,54 @@ public class Tracker {
         if (occupancyCounter > peakOccupancy) {
             peakOccupancy = occupancyCounter;
             peakOccupancyDateTime = LocalDateTime.now();
+        }
+    }
+
+    public void timeBetweenEvents() {
+        long totalWeightedOccupancy = 0;
+        long totalSeconds = 0;
+
+        for (int i = 0; i < eventHistory.size() - 1; i++) {
+            LocalDateTime firstTime = eventHistory.get(i).getEventDateTime();
+            LocalDateTime secondTime = eventHistory.get(i + 1).getEventDateTime();
+
+            Duration d = Duration.between(firstTime, secondTime);
+
+            long seconds = d.toSeconds();
+            totalSeconds += seconds;
+
+            int occupancyAfter = eventHistory.get(i).getOccupancyAfter();
+
+            long weightedOccupancy = occupancyAfter * seconds;
+            totalWeightedOccupancy += weightedOccupancy;
+
+            System.out.println("Occupancy "
+                    + eventHistory.get(i).getOccupancyAfter()
+                    + " lasted "
+                    + seconds
+                    + " seconds. " + occupancyAfter + " people * " + seconds + " = " + weightedOccupancy);
+        }
+
+        LocalDateTime lastEventTime = eventHistory.getLast().getEventDateTime();
+
+        Duration d = Duration.between(lastEventTime, LocalDateTime.now());
+
+        long seconds = d.toSeconds();
+        totalSeconds += seconds;
+
+        int occupancyAfter = eventHistory.getLast().getOccupancyAfter();
+
+        long weightedOccupancy = occupancyAfter * seconds;
+        totalWeightedOccupancy += weightedOccupancy;
+
+        if (totalSeconds == 0) {
+            System.out.println("Not enough elapsed time to calculate average occupancy.");
+        } else {
+            double average = (double) totalWeightedOccupancy / totalSeconds;
+
+            System.out.println("Total weighted occupancy: " + totalWeightedOccupancy + " person-seconds");
+            System.out.println("Total time: " + totalSeconds + " seconds");
+            System.out.println("Average occupancy: " + average);
         }
     }
 }

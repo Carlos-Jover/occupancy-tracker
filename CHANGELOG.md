@@ -101,3 +101,9 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Updated the menu option for viewing operating hours to display whether the business is currently open or closed.
+
+## [0.11.0] - Time-Weighted Average Occupancy
+
+### Added
+- Added calculation of elapsed time between occupancy events.
+- Added time-weighted average occupancy calculations.
