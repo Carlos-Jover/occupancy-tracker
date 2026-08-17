@@ -26,14 +26,15 @@ public class Main {
         System.out.println("7. View event history");
         System.out.println("8. Set operating hours (default set to 12:00 am - 11:59 pm)");
         System.out.println("9. View operating hours");
-        System.out.println("10. Help");
-        System.out.println("11. quit");
+        System.out.println("10. Run test simulation");
+        System.out.println("11. Help");
+        System.out.println("12. quit");
         System.out.println();
         System.out.println("Enter the command you would like to complete: ");
 
         int input = getValidInteger(keyboardInput, 1);
 
-        while (input != 11) {
+        while (input != 12) {
             if (input == 1) {
                 tracker.enter();
 
@@ -80,7 +81,16 @@ public class Main {
 
             } else if (input == 7) {
                 displayEventHistory(tracker);
-                tracker.timeBetweenEvents();
+                tracker.timeBetweenEvents(operatingHours);
+
+                System.out.println();
+                System.out.println();
+                double average = tracker.getAverageOccupancy(operatingHours);
+                if (average < 0) {
+                    System.out.println("Not enough elapsed time to calculate average occupancy.");
+                } else {
+                    System.out.printf("Average occupancy: %.2f%n", average);
+                }
 
             } else if (input == 8) {
                 keyboardInput.nextLine();
@@ -99,6 +109,9 @@ public class Main {
                 }
 
             } else if (input == 10) {
+                tracker.runTestSimulation(7, 5000, 10001);
+
+            } else if (input == 11) {
                 help();
 
             } else {
@@ -126,8 +139,9 @@ public class Main {
         System.out.println("7. View event history");
         System.out.println("8. Set operating hours");
         System.out.println("9. View operating hours");
-        System.out.println("10. Help");
-        System.out.println("11. quit");
+        System.out.println("10. Run test simulation");
+        System.out.println("11. Help");
+        System.out.println("12. quit");
     }
 
     public static void displayOccupancyPercentageBar(double occupancyPercentage) {

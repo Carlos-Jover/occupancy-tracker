@@ -1,8 +1,14 @@
 import java.io.*;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
+
+import static java.lang.Thread.sleep;
 
 public class Tracker {
     private int occupancyCounter;
@@ -88,7 +94,7 @@ public class Tracker {
         EventRecord eventRecord = new EventRecord(eventType, LocalDateTime.now(), occupancyCounter);
         eventHistory.add(eventRecord);
 
-        try (PrintWriter printWriter = new PrintWriter(new FileWriter("Event_History.txt", true))){
+        try (PrintWriter printWriter = new PrintWriter(new FileWriter("Event_History.txt", true))) {
             printWriter.println(eventRecord.getFormattedRecord());
 
         } catch (IOException exp) {
@@ -149,13 +155,46 @@ public class Tracker {
         }
     }
 
-    public void timeBetweenEvents() {
+    public void timeBetweenEvents(OperatingHours operatingHours) {
         long totalWeightedOccupancy = 0;
         long totalSeconds = 0;
+
+        LocalDateTime event = eventHistory.getFirst().getEventDateTime();
+
+        LocalDate eventDate = event.toLocalDate();
+
+        LocalTime openingTime = operatingHours.getOpeningTime();
+        LocalTime closingTime = operatingHours.getClosingTime();
+
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm a");
+
+        LocalDateTime openingDateTime = LocalDateTime.of(eventDate, openingTime);
+        LocalDateTime closingDateTime = LocalDateTime.of(eventDate, closingTime);
+
+        System.out.println();
+        System.out.println("Opening Date: " + eventDate);
+        System.out.println("Opening Time: " + openingTime);
+        System.out.println("Opening Hour: " + openingDateTime.format(format));
+        System.out.println("Closing Date: " + eventDate);
+        System.out.println("Closing Time: " + closingTime);
+        System.out.println("Closing Hour: " + closingDateTime.format(format));
+        System.out.println();
 
         for (int i = 0; i < eventHistory.size() - 1; i++) {
             LocalDateTime firstTime = eventHistory.get(i).getEventDateTime();
             LocalDateTime secondTime = eventHistory.get(i + 1).getEventDateTime();
+
+            if (firstTime.isBefore(openingDateTime)) {
+                firstTime = openingDateTime;
+            }
+
+            if (secondTime.isAfter(closingDateTime)) {
+                secondTime = closingDateTime;
+            }
+
+            if (!firstTime.isBefore(secondTime)) {
+                continue;
+            }
 
             Duration d = Duration.between(firstTime, secondTime);
 
@@ -172,19 +211,32 @@ public class Tracker {
                     + " lasted "
                     + seconds
                     + " seconds. " + occupancyAfter + " people * " + seconds + " = " + weightedOccupancy);
+
         }
 
+
         LocalDateTime lastEventTime = eventHistory.getLast().getEventDateTime();
+        LocalDateTime currentTime = LocalDateTime.now();
 
-        Duration d = Duration.between(lastEventTime, LocalDateTime.now());
+        if (lastEventTime.isBefore(openingDateTime)) {
+            lastEventTime = openingDateTime;
+        }
 
-        long seconds = d.toSeconds();
-        totalSeconds += seconds;
+        if (currentTime.isAfter(closingDateTime)) {
+            currentTime = closingDateTime;
+        }
 
-        int occupancyAfter = eventHistory.getLast().getOccupancyAfter();
+        if (lastEventTime.isBefore(currentTime)) {
+            Duration d = Duration.between(lastEventTime, currentTime);
 
-        long weightedOccupancy = occupancyAfter * seconds;
-        totalWeightedOccupancy += weightedOccupancy;
+            long seconds = d.toSeconds();
+            totalSeconds += seconds;
+
+            int occupancyAfter = eventHistory.getLast().getOccupancyAfter();
+
+            long weightedOccupancy = occupancyAfter * seconds;
+            totalWeightedOccupancy += weightedOccupancy;
+        }
 
         if (totalSeconds == 0) {
             System.out.println("Not enough elapsed time to calculate average occupancy.");
@@ -193,7 +245,102 @@ public class Tracker {
 
             System.out.println("Total weighted occupancy: " + totalWeightedOccupancy + " person-seconds");
             System.out.println("Total time: " + totalSeconds + " seconds");
-            System.out.println("Average occupancy: " + average);
+            System.out.printf("Average occupancy: %.2f", average);
+        }
+    }
+
+    public double getAverageOccupancy(OperatingHours operatingHours) {
+        long totalWeightedOccupancy = 0;
+        long totalSeconds = 0;
+
+        LocalDateTime event = eventHistory.getFirst().getEventDateTime();
+
+        LocalDate eventDate = event.toLocalDate();
+
+        LocalTime openingTime = operatingHours.getOpeningTime();
+        LocalTime closingTime = operatingHours.getClosingTime();
+
+        LocalDateTime openingDateTime = LocalDateTime.of(eventDate, openingTime);
+        LocalDateTime closingDateTime = LocalDateTime.of(eventDate, closingTime);
+
+        for (int i = 0; i < eventHistory.size() - 1; i++) {
+            LocalDateTime firstTime = eventHistory.get(i).getEventDateTime();
+            LocalDateTime secondTime = eventHistory.get(i + 1).getEventDateTime();
+
+            if (firstTime.isBefore(openingDateTime)) {
+                firstTime = openingDateTime;
+            }
+
+            if (secondTime.isAfter(closingDateTime)) {
+                secondTime = closingDateTime;
+            }
+
+            if (!firstTime.isBefore(secondTime)) {
+                continue;
+            }
+
+            Duration d = Duration.between(firstTime, secondTime);
+
+            long seconds = d.toSeconds();
+            totalSeconds += seconds;
+
+            int occupancyAfter = eventHistory.get(i).getOccupancyAfter();
+
+            long weightedOccupancy = occupancyAfter * seconds;
+            totalWeightedOccupancy += weightedOccupancy;
+        }
+
+
+        LocalDateTime lastEventTime = eventHistory.getLast().getEventDateTime();
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        if (lastEventTime.isBefore(openingDateTime)) {
+            lastEventTime = openingDateTime;
+        }
+
+        if (currentTime.isAfter(closingDateTime)) {
+            currentTime = closingDateTime;
+        }
+
+        if (lastEventTime.isBefore(currentTime)) {
+            Duration d = Duration.between(lastEventTime, currentTime);
+
+            long seconds = d.toSeconds();
+            totalSeconds += seconds;
+
+            int occupancyAfter = eventHistory.getLast().getOccupancyAfter();
+
+            long weightedOccupancy = occupancyAfter * seconds;
+            totalWeightedOccupancy += weightedOccupancy;
+        }
+
+        if (totalSeconds == 0) {
+            return -1;
+        } else {
+            return (double) totalWeightedOccupancy / totalSeconds;
+        }
+    }
+
+    public void runTestSimulation(int numberOfAttempts, int minTime, int maxTime) {
+        try {
+            Random random = new Random();
+            int n = 0;
+
+            while (n != numberOfAttempts){
+                int time = random.nextInt(minTime, maxTime);
+                Thread.sleep(time);
+
+                int randomInt = random.nextInt(2);
+                if (randomInt == 0) {
+                    enter();
+                } else {
+                    exit();
+                }
+
+                n++;
+            }
+        } catch (InterruptedException exp ){
+            System.out.println(exp.getMessage());
         }
     }
 }

@@ -107,3 +107,10 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Added calculation of elapsed time between occupancy events.
 - Added time-weighted average occupancy calculations.
+
+## [0.12.0] - Time-Weighted Average Occupancy Within Operating Hours and Test Simulation
+
+### Added
+- Added filtering so average occupancy only includes time within operating hours.
+- Added a method for running a random traffic test simulation.
+- Added a method that returns the time-weighted average occupancy.
