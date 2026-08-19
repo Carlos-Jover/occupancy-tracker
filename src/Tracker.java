@@ -8,14 +8,13 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
-import static java.lang.Thread.sleep;
-
 public class Tracker {
     private int occupancyCounter;
     private int highOccupancy;
     private ArrayList<EventRecord> eventHistory;
     private int peakOccupancy;
     private LocalDateTime peakOccupancyDateTime;
+    private ArrayList<EventRecord> eventHistoryTotalData;
 
     public Tracker(int highOccupancy) {
         this.occupancyCounter = 0;
@@ -25,6 +24,7 @@ public class Tracker {
             throw new IllegalArgumentException("Occupancy can not be 0 or less.");
         }
         eventHistory = new ArrayList<>();
+        eventHistoryTotalData = new ArrayList<>();
     }
 
     public int getOccupancyCounter() {
@@ -342,5 +342,33 @@ public class Tracker {
         } catch (InterruptedException exp ){
             System.out.println(exp.getMessage());
         }
+    }
+
+    public void loadEventHistoryData() {
+        try (Scanner reader = new Scanner(new File("Event_History.txt"))) {
+            eventHistoryTotalData.clear();
+
+            while (reader.hasNextLine()) {
+                String currentLine = reader.nextLine();
+                if (!currentLine.isEmpty()) {
+                    eventHistoryTotalData.add(EventRecord.parse(currentLine));
+                }
+            }
+
+        } catch (FileNotFoundException exp) {
+            System.out.println(exp.getMessage());
+        }
+    }
+
+    public ArrayList<EventRecord> getEventsForDate(LocalDate date) {
+        ArrayList<EventRecord> matchingEvents = new ArrayList<>();
+
+        for (EventRecord eventRecord : eventHistoryTotalData) {
+            if (eventRecord.getEventDateTime().toLocalDate().equals(date)) {
+                matchingEvents.add(eventRecord);
+            }
+        }
+
+        return matchingEvents;
     }
 }

@@ -114,3 +114,10 @@ All notable changes to this project will be documented in this file.
 - Added filtering so average occupancy only includes time within operating hours.
 - Added a method for running a random traffic test simulation.
 - Added a method that returns the time-weighted average occupancy.
+
+## [0.13.0] - Historical Event Data Loading
+
+### Added
+- Added parsing of saved event records back into `EventRecord` objects.
+- Added loading of saved event history into an `ArrayList` for historical data.
+- Added the ability to retrieve historical event records from a specific date.
