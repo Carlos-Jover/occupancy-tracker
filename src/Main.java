@@ -1,6 +1,8 @@
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -26,15 +28,16 @@ public class Main {
         System.out.println("7. View event history");
         System.out.println("8. Set operating hours (default set to 12:00 am - 11:59 pm)");
         System.out.println("9. View operating hours");
-        System.out.println("10. Run test simulation");
-        System.out.println("11. Help");
-        System.out.println("12. quit");
+        System.out.println("10. Analytics");
+        System.out.println("11. Run test simulation");
+        System.out.println("12. Help");
+        System.out.println("13. quit");
         System.out.println();
         System.out.println("Enter the command you would like to complete: ");
 
         int input = getValidInteger(keyboardInput, 1);
 
-        while (input != 12) {
+        while (input != 13) {
             if (input == 1) {
                 tracker.enter();
 
@@ -81,16 +84,6 @@ public class Main {
 
             } else if (input == 7) {
                 displayEventHistory(tracker);
-                tracker.timeBetweenEvents(operatingHours);
-
-                System.out.println();
-                System.out.println();
-                double average = tracker.getAverageOccupancy(operatingHours);
-                if (average < 0) {
-                    System.out.println("Not enough elapsed time to calculate average occupancy.");
-                } else {
-                    System.out.printf("Average occupancy: %.2f%n", average);
-                }
 
             } else if (input == 8) {
                 keyboardInput.nextLine();
@@ -109,9 +102,27 @@ public class Main {
                 }
 
             } else if (input == 10) {
-                tracker.runTestSimulation(7, 5000, 10001);
+                tracker.loadEventHistoryData();
+
+                LocalDate date = LocalDate.of(2026, 8, 17);
+
+                ArrayList<EventRecord> events = tracker.getEventsForDate(date);
+
+                OccupancyAnalytics analytics = new OccupancyAnalytics(events);
+
+                double average = analytics.getAverageOccupancy(operatingHours);
+
+                if (average == -1) {
+                    System.out.println("No events.");
+                } else {
+                    System.out.printf("Average: %.2f%n", average);
+                }
+
 
             } else if (input == 11) {
+                tracker.runTestSimulation(7, 5000, 10001);
+
+            } else if (input == 12) {
                 help();
 
             } else {
@@ -139,9 +150,10 @@ public class Main {
         System.out.println("7. View event history");
         System.out.println("8. Set operating hours");
         System.out.println("9. View operating hours");
-        System.out.println("10. Run test simulation");
-        System.out.println("11. Help");
-        System.out.println("12. quit");
+        System.out.println("10. Analytics");
+        System.out.println("11. Run test simulation");
+        System.out.println("12. Help");
+        System.out.println("13. quit");
     }
 
     public static void displayOccupancyPercentageBar(double occupancyPercentage) {

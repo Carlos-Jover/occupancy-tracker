@@ -23,7 +23,7 @@ public class EventRecord {
     }
 
     public String getFormattedRecord() {
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm a");
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
         String formattedTime = eventDateTime.format(format);
         return String.format("%-15s | %s | Occupancy: %d", eventType, formattedTime, occupancyAfter);
     }
@@ -37,10 +37,9 @@ public class EventRecord {
 
         int occupancy = Integer.parseInt(occupancyText[1].trim());
 
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm a");
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
         LocalDateTime eventDateTime = LocalDateTime.parse(eventDateTimeText, format);
 
-        EventRecord event = new EventRecord(eventType, eventDateTime, occupancy);
-        return event;
+        return new EventRecord(eventType, eventDateTime, occupancy);
     }
 }

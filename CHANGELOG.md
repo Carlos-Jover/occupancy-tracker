@@ -121,3 +121,13 @@ All notable changes to this project will be documented in this file.
 - Added parsing of saved event records back into `EventRecord` objects.
 - Added loading of saved event history into an `ArrayList` for historical data.
 - Added the ability to retrieve historical event records from a specific date.
+
+## [0.14.0] - Create OccupancyAnalytics Class
+
+### Added
+- Added the 'OccupancyAnalytics' class.
+- Added a new menu option for analytics.
+- Created 'AnalyticsTest' class for testing out the analytics.
+
+### Changed
+- Moved the time-weighted average method into the 'OccupancyAnalytics' class.
