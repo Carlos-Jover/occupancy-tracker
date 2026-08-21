@@ -107,10 +107,18 @@ public class Main {
 
                 int choice = getValidInteger(keyboardInput, 1);
 
-                while(choice != 2) {
+                while (choice != 4) {
                     if (choice == 1) {
                         System.out.println("Enter date to analyze: ");
                         historicalAnalyticsByDate(tracker, keyboardInput, operatingHours);
+
+                    } else if (choice == 2) {
+                        System.out.println("Enter a date to analyze: ");
+                        peakOccupancyByDate(tracker, keyboardInput);
+
+                    } else if (choice == 3) {
+                        System.out.println("Enter a date to analyze");
+                        dailyTrafficByDate(tracker, keyboardInput);
 
                     } else {
                         System.out.println("Choose from the available options. Try again: ");
@@ -164,7 +172,9 @@ public class Main {
     public static void analyticsSubMenu() {
         System.out.println("Choose from the following to view: ");
         System.out.println("1. Average occupancy");
-        System.out.println("2. Back");
+        System.out.println("2. Peak occupancy");
+        System.out.println("3. Daily traffic");
+        System.out.println("4. Back");
     }
 
     public static void displayOccupancyPercentageBar(double occupancyPercentage) {
@@ -220,14 +230,14 @@ public class Main {
         }
     }
 
-    public static void displayOperatingTimes (OperatingHours operatingHours) {
+    public static void displayOperatingTimes(OperatingHours operatingHours) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
         String openingHour = operatingHours.getOpeningTime().format(formatter);
         String closingHour = operatingHours.getClosingTime().format(formatter);
         System.out.println("Operating hours are " + openingHour + " to " + closingHour);
     }
 
-    public static void setOperatingHours (Scanner scanner, OperatingHours operatingHours) {
+    public static void setOperatingHours(Scanner scanner, OperatingHours operatingHours) {
         System.out.println("To input operating hours, follow the format hh:mm AM/PM (ex. 07:30 AM to 02:30 PM).");
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
@@ -261,12 +271,13 @@ public class Main {
         }
     }
 
-    public static void historicalAnalyticsByDate(Tracker tracker, Scanner keyboardInput, OperatingHours operatingHours) {
+    public static void historicalAnalyticsByDate(Tracker tracker, Scanner keyboardInput, OperatingHours
+            operatingHours) {
         tracker.loadEventHistoryData();
 
         boolean success = false;
 
-        while(!success) {
+        while (!success) {
             try {
                 String dateText = keyboardInput.next();
 
@@ -287,6 +298,98 @@ public class Main {
                 }
 
                 success = true;
+
+            } catch (DateTimeParseException exp) {
+                System.out.println("Input should be a valid date in the format MM/dd/yyyy.");
+                System.out.println("Try again: ");
+            }
+        }
+    }
+
+    public static void peakOccupancyByDate(Tracker tracker, Scanner keyboardInput) {
+        tracker.loadEventHistoryData();
+
+        boolean success = false;
+
+        while (!success) {
+            try {
+                String dateText = keyboardInput.next();
+
+                System.out.println();
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/uuuu").withResolverStyle(ResolverStyle.STRICT);
+
+                LocalDate date = LocalDate.parse(dateText, formatter);
+
+                ArrayList<EventRecord> events = tracker.getEventsForDate(date);
+                OccupancyAnalytics analytics = new OccupancyAnalytics(events);
+
+                int peakOccupancy = analytics.getPeakOccupancy();
+
+                if (peakOccupancy == -1) {
+                    System.out.println("No event data available for " + date.format(formatter) + ".");
+                } else {
+                    System.out.printf("Peak occupancy for %s: %d%n", date.format(formatter), peakOccupancy);
+                    System.out.println("Time: ");
+
+                    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm:ss a");
+
+                    for (EventRecord event : events) {
+                        if (event.getOccupancyAfter() == peakOccupancy) {
+                            System.out.print(event.getEventDateTime().format(timeFormatter) + " \n");
+                        }
+                    }
+                }
+
+                success = true;
+
+            } catch (DateTimeParseException exp) {
+                System.out.println("Input should be a valid date in the format MM/dd/yyyy.");
+                System.out.println("Try again: ");
+            }
+        }
+    }
+
+    public static void dailyTrafficByDate(Tracker tracker, Scanner keyboardInput) {
+        tracker.loadEventHistoryData();
+
+        boolean success = false;
+
+        while (!success) {
+            try {
+                String dateText = keyboardInput.next();
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/uuuu").withResolverStyle(ResolverStyle.STRICT);
+
+                LocalDate date = LocalDate.parse(dateText, formatter);
+
+                ArrayList<EventRecord> events = tracker.getEventsForDate(date);
+
+                if (events.isEmpty()) {
+                    System.out.println("No event data available for " + date.format(formatter) + ".");
+                    break;
+                }
+
+                int entries = 0;
+                int exits = 0;
+
+                for (EventRecord event : events) {
+                    if (event.getEventType().equals("Enter")) {
+                        entries++;
+                    } else if (event.getEventType().equals("Exit")) {
+                        exits++;
+                    }
+                }
+
+                System.out.println();
+
+                int totalTraffic = entries + exits;
+                System.out.println("Entries: " + entries);
+                System.out.println("Exits: " + exits);
+                System.out.println("Total traffic: " + totalTraffic);
+
+                success = true;
+
             } catch (DateTimeParseException exp) {
                 System.out.println("Input should be a valid date in the format MM/dd/yyyy.");
                 System.out.println("Try again: ");

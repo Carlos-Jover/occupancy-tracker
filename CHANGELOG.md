@@ -141,3 +141,10 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Updated date parsing to use strict validation to prevent invalid dates from being automatically adjusted.
+
+## [0.16.0] Peak Occupancy by Date and Daily Traffic by Date
+
+### Added
+- Added menu options to view peak occupancy and daily traffic.
+- Added peak occupancy analysis for a user-selected date.
+- Added daily traffic analysis that calculates entries, exits, and total traffic and displays them.

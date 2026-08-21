@@ -100,4 +100,20 @@ public class OccupancyAnalytics {
             return (double) totalWeightedOccupancy / totalSeconds;
         }
     }
+
+    public int getPeakOccupancy() {
+        if (events.isEmpty()) {
+            return -1;
+        }
+
+        int peakOccupancy = 0;
+
+        for (EventRecord event : events) {
+            if (event.getOccupancyAfter() > peakOccupancy) {
+                peakOccupancy = event.getOccupancyAfter();
+            }
+        }
+
+        return peakOccupancy;
+    }
 }
