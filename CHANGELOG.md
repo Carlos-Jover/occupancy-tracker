@@ -131,3 +131,13 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Moved the time-weighted average method into the 'OccupancyAnalytics' class.
+
+## [0.15.0] - Historical Analytics by Date
+
+### Added
+- Added historical average occupancy analysis for a user-selected date.
+- Added an analytics submenu to support multiple analytics options.
+- Added validation for invalid date input.
+
+### Changed
+- Updated date parsing to use strict validation to prevent invalid dates from being automatically adjusted.

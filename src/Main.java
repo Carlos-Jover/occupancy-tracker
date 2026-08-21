@@ -2,6 +2,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -102,22 +103,26 @@ public class Main {
                 }
 
             } else if (input == 10) {
-                tracker.loadEventHistoryData();
+                analyticsSubMenu();
 
-                LocalDate date = LocalDate.of(2026, 8, 17);
+                int choice = getValidInteger(keyboardInput, 1);
 
-                ArrayList<EventRecord> events = tracker.getEventsForDate(date);
+                while(choice != 2) {
+                    if (choice == 1) {
+                        System.out.println("Enter date to analyze: ");
+                        historicalAnalyticsByDate(tracker, keyboardInput, operatingHours);
 
-                OccupancyAnalytics analytics = new OccupancyAnalytics(events);
+                    } else {
+                        System.out.println("Choose from the available options. Try again: ");
+                    }
 
-                double average = analytics.getAverageOccupancy(operatingHours);
+                    System.out.println();
+                    analyticsSubMenu();
 
-                if (average == -1) {
-                    System.out.println("No events.");
-                } else {
-                    System.out.printf("Average: %.2f%n", average);
+                    choice = getValidInteger(keyboardInput, 1);
                 }
 
+                System.out.println("Exiting analysis.");
 
             } else if (input == 11) {
                 tracker.runTestSimulation(7, 5000, 10001);
@@ -154,6 +159,12 @@ public class Main {
         System.out.println("11. Run test simulation");
         System.out.println("12. Help");
         System.out.println("13. quit");
+    }
+
+    public static void analyticsSubMenu() {
+        System.out.println("Choose from the following to view: ");
+        System.out.println("1. Average occupancy");
+        System.out.println("2. Back");
     }
 
     public static void displayOccupancyPercentageBar(double occupancyPercentage) {
@@ -245,6 +256,39 @@ public class Main {
 
             } catch (IllegalArgumentException exp) {
                 System.out.println("Opening time must come before closing time.");
+                System.out.println("Try again: ");
+            }
+        }
+    }
+
+    public static void historicalAnalyticsByDate(Tracker tracker, Scanner keyboardInput, OperatingHours operatingHours) {
+        tracker.loadEventHistoryData();
+
+        boolean success = false;
+
+        while(!success) {
+            try {
+                String dateText = keyboardInput.next();
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/uuuu").withResolverStyle(ResolverStyle.STRICT);
+
+                LocalDate date = LocalDate.parse(dateText, formatter);
+
+                ArrayList<EventRecord> events = tracker.getEventsForDate(date);
+                OccupancyAnalytics analytics = new OccupancyAnalytics(events);
+
+                double average = analytics.getAverageOccupancy(operatingHours);
+                System.out.println();
+
+                if (average == -1) {
+                    System.out.println("No event data available for " + date.format(formatter) + ".");
+                } else {
+                    System.out.printf("Average occupancy for %s: %.2f%n", date.format(formatter), average);
+                }
+
+                success = true;
+            } catch (DateTimeParseException exp) {
+                System.out.println("Input should be a valid date in the format MM/dd/yyyy.");
                 System.out.println("Try again: ");
             }
         }
