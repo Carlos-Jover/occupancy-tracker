@@ -148,3 +148,9 @@ All notable changes to this project will be documented in this file.
 - Added menu options to view peak occupancy and daily traffic.
 - Added peak occupancy analysis for a user-selected date.
 - Added daily traffic analysis that calculates entries, exits, and total traffic and displays them.
+
+## [0.17.0] Busiest Hour by Date
+
+### Added
+- Added a menu option to view the busiest hour of the day.
+- Added busiest hour analysis that calculates average occupancy per hour and displays the busiest hour along with its average.

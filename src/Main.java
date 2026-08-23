@@ -1,4 +1,5 @@
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -107,7 +108,9 @@ public class Main {
 
                 int choice = getValidInteger(keyboardInput, 1);
 
-                while (choice != 4) {
+                while (choice != 5) {
+                    tracker.loadEventHistoryData();
+
                     if (choice == 1) {
                         System.out.println("Enter date to analyze: ");
                         historicalAnalyticsByDate(tracker, keyboardInput, operatingHours);
@@ -119,6 +122,10 @@ public class Main {
                     } else if (choice == 3) {
                         System.out.println("Enter a date to analyze");
                         dailyTrafficByDate(tracker, keyboardInput);
+
+                    } else if (choice == 4) {
+                        System.out.println("Enter a date to analyze");
+                        busiestHourByDate(tracker, keyboardInput);
 
                     } else {
                         System.out.println("Choose from the available options. Try again: ");
@@ -174,7 +181,8 @@ public class Main {
         System.out.println("1. Average occupancy");
         System.out.println("2. Peak occupancy");
         System.out.println("3. Daily traffic");
-        System.out.println("4. Back");
+        System.out.println("4. Busiest hour");
+        System.out.println("5. Back");
     }
 
     public static void displayOccupancyPercentageBar(double occupancyPercentage) {
@@ -273,8 +281,6 @@ public class Main {
 
     public static void historicalAnalyticsByDate(Tracker tracker, Scanner keyboardInput, OperatingHours
             operatingHours) {
-        tracker.loadEventHistoryData();
-
         boolean success = false;
 
         while (!success) {
@@ -307,8 +313,6 @@ public class Main {
     }
 
     public static void peakOccupancyByDate(Tracker tracker, Scanner keyboardInput) {
-        tracker.loadEventHistoryData();
-
         boolean success = false;
 
         while (!success) {
@@ -351,8 +355,6 @@ public class Main {
     }
 
     public static void dailyTrafficByDate(Tracker tracker, Scanner keyboardInput) {
-        tracker.loadEventHistoryData();
-
         boolean success = false;
 
         while (!success) {
@@ -387,6 +389,71 @@ public class Main {
                 System.out.println("Entries: " + entries);
                 System.out.println("Exits: " + exits);
                 System.out.println("Total traffic: " + totalTraffic);
+
+                success = true;
+
+            } catch (DateTimeParseException exp) {
+                System.out.println("Input should be a valid date in the format MM/dd/yyyy.");
+                System.out.println("Try again: ");
+            }
+        }
+    }
+
+    public static void busiestHourByDate(Tracker tracker, Scanner keyboardInput) {
+        boolean success = false;
+
+        while (!success) {
+            try {
+                String dateText = keyboardInput.next();
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/uuuu").withResolverStyle(ResolverStyle.STRICT);
+
+                LocalDate date = LocalDate.parse(dateText, formatter);
+
+                ArrayList<EventRecord> events = tracker.getEventsForDate(date);
+
+                if (events.isEmpty()) {
+                    System.out.println("No event data available for " + date.format(formatter) + ".");
+                    break;
+                }
+
+                System.out.println();
+
+                double highestAverage = 0;
+                LocalTime startHour = null;
+                LocalTime endHour = null;
+
+                for (int i = 0; i < 24; i++) {
+                    LocalTime startTime = LocalTime.of(i, 0, 0);
+                    LocalTime endTime = null;
+
+                    if (!startTime.equals(LocalTime.of(23, 0, 0))) {
+                        endTime = LocalTime.of(i + 1, 0, 0);
+                    } else {
+                        endTime = LocalTime.of(23, 59, 59);
+                    }
+
+                    OperatingHours tempOperatingHours = new OperatingHours();
+                    tempOperatingHours.setOperatingHours(startTime, endTime);
+
+                    OccupancyAnalytics analytics = new OccupancyAnalytics(events);
+
+                    double averageOccupancy = analytics.getAverageOccupancy(tempOperatingHours);
+                    if (highestAverage < averageOccupancy) {
+                        highestAverage = averageOccupancy;
+                        startHour = startTime;
+                        endHour = endTime;
+                    }
+                }
+
+                if (highestAverage == 0) {
+                    System.out.println("No occupancy events occurred.");
+                    break;
+                }
+
+                DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
+                System.out.printf("Busiest hour: %s - %s\n", startHour.format(timeFormatter), endHour.format(timeFormatter));
+                System.out.printf("Average occupancy: %.2f\n", highestAverage);
 
                 success = true;
 
