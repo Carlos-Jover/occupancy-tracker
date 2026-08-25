@@ -154,3 +154,11 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Added a menu option to view the busiest hour of the day.
 - Added busiest hour analysis that calculates average occupancy per hour and displays the busiest hour along with its average.
+
+## [0.18.0] Busiest Day of the Week
+
+### Added
+- Added a method to calculate the busiest day of the week and the average daily traffic.
+- Added a submenu option to display the busiest day of week and average.
+- Created 'BusiestDayResult' class.
+- Created 'BusiestDayTest' class.

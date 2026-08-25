@@ -108,7 +108,7 @@ public class Main {
 
                 int choice = getValidInteger(keyboardInput, 1);
 
-                while (choice != 5) {
+                while (choice != 6) {
                     tracker.loadEventHistoryData();
 
                     if (choice == 1) {
@@ -126,6 +126,18 @@ public class Main {
                     } else if (choice == 4) {
                         System.out.println("Enter a date to analyze");
                         busiestHourByDate(tracker, keyboardInput);
+
+                    } else if (choice == 5) {
+                        ArrayList<EventRecord> events = tracker.getEventHistoryTotalData();
+                        OccupancyAnalytics analytics = new OccupancyAnalytics(events);
+                        BusiestDayResult result = analytics.getBusiestDayOfWeek();
+
+                        if (result.getDayOfWeek().isEmpty()) {
+                            System.out.println("No data to pull from.");
+                        } else {
+                            System.out.println("Busiest day of the week: " + result.getDayOfWeek());
+                            System.out.println("Average daily traffic: " + result.getAverageTraffic());
+                        }
 
                     } else {
                         System.out.println("Choose from the available options. Try again: ");
@@ -182,7 +194,8 @@ public class Main {
         System.out.println("2. Peak occupancy");
         System.out.println("3. Daily traffic");
         System.out.println("4. Busiest hour");
-        System.out.println("5. Back");
+        System.out.println("5. Busiest day of the week");
+        System.out.println("6. Back");
     }
 
     public static void displayOccupancyPercentageBar(double occupancyPercentage) {

@@ -44,6 +44,10 @@ public class Tracker {
         return peakOccupancyDateTime;
     }
 
+    public ArrayList<EventRecord> getEventHistoryTotalData() {
+        return eventHistoryTotalData;
+    }
+
     public void setHighOccupancy(int highOccupancy) {
         if (highOccupancy > 0) {
             this.highOccupancy = highOccupancy;

@@ -1,8 +1,6 @@
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.util.ArrayList;
+import java.util.EnumMap;
 
 public class OccupancyAnalytics {
     private ArrayList<EventRecord> events;
@@ -115,5 +113,76 @@ public class OccupancyAnalytics {
         }
 
         return peakOccupancy;
+    }
+
+    public BusiestDayResult getBusiestDayOfWeek() {
+        DayOfWeek dayOfWeek;
+        int entries = 0;
+        int exits = 0;
+        int totalTraffic = 0;
+
+        EnumMap<DayOfWeek, Integer> amountDaysOfWeekMap = new EnumMap<>(DayOfWeek.class);
+        EnumMap<DayOfWeek, Integer> totalTrafficMap = new EnumMap<>(DayOfWeek.class);
+
+
+        for (int i = 0; i < events.size(); i++) {
+            LocalDateTime eventDate = events.get(i).getEventDateTime();
+
+            LocalDateTime nextEventDate;
+
+            if (!events.get(i).equals(events.getLast())) {
+                nextEventDate = events.get(i+1).getEventDateTime();
+            } else {
+                nextEventDate = eventDate;
+            }
+
+
+            LocalDate date = eventDate.toLocalDate();
+            LocalDate nextDate = nextEventDate.toLocalDate();
+
+            dayOfWeek = date.getDayOfWeek();
+
+            if (events.get(i).getEventType().equals("Enter")) {
+                entries++;
+            } else if (events.get(i).getEventType().equals("Exit")) {
+                exits++;
+            }
+
+            if (!date.equals(nextDate) || events.get(i).equals(events.getLast())) {
+                int currentAmount = amountDaysOfWeekMap.getOrDefault(dayOfWeek, 0);
+                currentAmount++;
+                amountDaysOfWeekMap.put(dayOfWeek, currentAmount);
+
+                totalTraffic = entries + exits;
+                int currentTraffic = totalTrafficMap.getOrDefault(dayOfWeek, 0);
+                currentTraffic += totalTraffic;
+                totalTrafficMap.put(dayOfWeek, currentTraffic);
+
+                entries = 0;
+                exits = 0;
+            }
+        }
+
+        double average = 0;
+        ArrayList<DayOfWeek> busiestDay = new ArrayList<>();
+        for (DayOfWeek currentDay : DayOfWeek.values()) {
+            int amountOfDays = amountDaysOfWeekMap.getOrDefault(currentDay, 0);
+            int traffic = totalTrafficMap.getOrDefault(currentDay, 0);
+
+            if (amountOfDays != 0) {
+                double checkAverage = (double) traffic / amountOfDays;
+
+                if (checkAverage > average) {
+                    average = checkAverage;
+                    busiestDay.clear();
+                    busiestDay.add(currentDay);
+
+                } else if (checkAverage == average) {
+                    busiestDay.add(currentDay);
+                }
+            }
+        }
+
+       return new BusiestDayResult(busiestDay, average);
     }
 }
