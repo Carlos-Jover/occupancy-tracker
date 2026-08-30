@@ -185,4 +185,12 @@ public class OccupancyAnalytics {
 
        return new BusiestDayResult(busiestDay, average);
     }
+
+    public double getPercentOfHighOccupancy(int occupancy, int highOccupancy) {
+        double percent = ((double) occupancy / highOccupancy) * 100;
+        if (percent > 100) {
+            percent = 100;
+        }
+        return percent;
+    }
 }

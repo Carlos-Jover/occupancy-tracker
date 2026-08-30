@@ -1,3 +1,4 @@
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -66,7 +67,7 @@ public class Main {
                 System.out.printf("Occupancy level: %.0f%%\n", occupancyPercentage);
 
                 displayOccupancyPercentageBar(occupancyPercentage);
-                displayLevelOfOccupancy(occupancyPercentage);
+                System.out.println(returnLevelOfOccupancy(occupancyPercentage));
 
                 System.out.println();
 
@@ -108,7 +109,7 @@ public class Main {
 
                 int choice = getValidInteger(keyboardInput, 1);
 
-                while (choice != 6) {
+                while (choice != 7) {
                     tracker.loadEventHistoryData();
 
                     if (choice == 1) {
@@ -138,6 +139,10 @@ public class Main {
                             System.out.println("Busiest day of the week: " + result.getDayOfWeek());
                             System.out.println("Average daily traffic: " + result.getAverageTraffic());
                         }
+
+                    } else if (choice == 6) {
+                        System.out.println("Enter a date to analyze: ");
+                        getHighOccupancyPeriods(tracker, keyboardInput);
 
                     } else {
                         System.out.println("Choose from the available options. Try again: ");
@@ -195,7 +200,8 @@ public class Main {
         System.out.println("3. Daily traffic");
         System.out.println("4. Busiest hour");
         System.out.println("5. Busiest day of the week");
-        System.out.println("6. Back");
+        System.out.println("6. Periods of high occupancy");
+        System.out.println("7. Back");
     }
 
     public static void displayOccupancyPercentageBar(double occupancyPercentage) {
@@ -211,13 +217,13 @@ public class Main {
         System.out.println("]");
     }
 
-    public static void displayLevelOfOccupancy(double occupancyPercentage) {
+    public static String returnLevelOfOccupancy(double occupancyPercentage) {
         if (occupancyPercentage < 40) {
-            System.out.println("Low occupancy");
+            return "Low Occupancy";
         } else if (occupancyPercentage < 70) {
-            System.out.println("Moderate occupancy");
+            return "Moderate Occupancy";
         } else {
-            System.out.println("High occupancy");
+            return "High Occupancy";
         }
     }
 
@@ -467,6 +473,104 @@ public class Main {
                 DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
                 System.out.printf("Busiest hour: %s - %s\n", startHour.format(timeFormatter), endHour.format(timeFormatter));
                 System.out.printf("Average occupancy: %.2f\n", highestAverage);
+
+                success = true;
+
+            } catch (DateTimeParseException exp) {
+                System.out.println("Input should be a valid date in the format MM/dd/yyyy.");
+                System.out.println("Try again: ");
+            }
+        }
+    }
+
+    public static void getHighOccupancyPeriods(Tracker tracker, Scanner keyboardInput) {
+        boolean success = false;
+
+        while (!success) {
+            try {
+                String dateText = keyboardInput.next();
+
+                System.out.println();
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/uuuu").withResolverStyle(ResolverStyle.STRICT);
+
+                LocalDate date = LocalDate.parse(dateText, formatter);
+
+                ArrayList<EventRecord> events = tracker.getEventsForDate(date);
+                OccupancyAnalytics analytics = new OccupancyAnalytics(events);
+
+                if (events.isEmpty()) {
+                    System.out.printf("No data for %s\n", date.format(formatter));
+                    break;
+                }
+
+                System.out.printf("High occupancy periods for %s:\n", date.format(formatter));
+
+                DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
+
+                boolean highOccupancyOccurred = false;
+                boolean inhighOccupancy = false;
+                LocalDateTime highOccupancyStart = null;
+                long totalMinutes = 0;
+
+                for (EventRecord event : events) {
+                    double occupancyPercentage = analytics.getPercentOfHighOccupancy(event.getOccupancyAfter(), tracker.getHighOccupancy());
+
+                    boolean isHighOccupancy = returnLevelOfOccupancy(occupancyPercentage).equals("High Occupancy");
+
+                    if (isHighOccupancy && !inhighOccupancy) {
+                        highOccupancyStart = event.getEventDateTime();
+                        inhighOccupancy = true;
+                        highOccupancyOccurred = true;
+
+                    } else if (!isHighOccupancy && inhighOccupancy) {
+                        System.out.printf("%s - %s\n", highOccupancyStart.format(timeFormatter), event.getEventDateTime().format(timeFormatter));
+                        Duration duration = Duration.between(highOccupancyStart, event.getEventDateTime());
+                        totalMinutes += duration.toMinutes();
+                        inhighOccupancy = false;
+                    }
+                }
+
+                boolean unknownEnd = false;
+                if (inhighOccupancy) {
+                    System.out.printf("%s - End unknown\n", highOccupancyStart.format(timeFormatter));
+                    unknownEnd = true;
+                }
+
+                if (!highOccupancyOccurred) {
+                    System.out.println("No high occupancy periods occurred.");
+
+                } else {
+                    System.out.println();
+
+                    long hours = totalMinutes / 60;
+                    long minutes = totalMinutes % 60;
+
+                    String timeText = "";
+
+                    if (hours > 0) {
+                        timeText += hours + (hours == 1 ? " hour" : " hours");
+                    }
+
+                    if (minutes > 0) {
+                        if (hours > 0) {
+                            timeText += " ";
+                        }
+
+                        timeText += minutes + (minutes == 1 ? " minute" : " minutes");
+                    }
+
+                    if (hours == 0 && minutes == 0) {
+                        timeText = "0 minutes";
+                    }
+
+                    if (unknownEnd) {
+                        System.out.printf("Total known time at high occupancy: %s\n", timeText);
+                        System.out.println("(One period has an unknown end time.)");
+                    } else {
+                        System.out.printf("Total time at high occupancy: %s\n", timeText);
+                    }
+                }
 
                 success = true;
 

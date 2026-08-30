@@ -162,3 +162,9 @@ All notable changes to this project will be documented in this file.
 - Added a submenu option to display the busiest day of week and average.
 - Created 'BusiestDayResult' class.
 - Created 'BusiestDayTest' class.
+
+## [0.19.0] Periods of High Occupancy by Date
+
+### Added
+- Added a method to calculate the percentage of an event's occupancy relative to the high-occupancy threshold.
+- Added a submenu option to display the periods of high occupancy and the amount of time spent in high occupancy for a user-selected date.
