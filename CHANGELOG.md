@@ -168,3 +168,10 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Added a method to calculate the percentage of an event's occupancy relative to the high-occupancy threshold.
 - Added a submenu option to display the periods of high occupancy and the amount of time spent in high occupancy for a user-selected date.
+
+## [0.20.0] Beginning of the Occupancy Tracker GUI
+
+### Added
+- Added an 'OccupancyTrackerGUI' class.
+- Added the display for the occupancy counter and occupancy counter percentage.
+- Added enter and exit buttons.
