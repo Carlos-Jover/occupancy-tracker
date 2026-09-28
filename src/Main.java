@@ -67,7 +67,7 @@ public class Main {
                 System.out.printf("Occupancy level: %.0f%%\n", occupancyPercentage);
 
                 displayOccupancyPercentageBar(occupancyPercentage);
-                System.out.println(returnLevelOfOccupancy(occupancyPercentage));
+                System.out.println(tracker.returnLevelOfOccupancy(occupancyPercentage));
 
                 System.out.println();
 
@@ -215,16 +215,6 @@ public class Main {
         System.out.print(hashtagRepeat);
         System.out.print(dashRepeat);
         System.out.println("]");
-    }
-
-    public static String returnLevelOfOccupancy(double occupancyPercentage) {
-        if (occupancyPercentage < 40) {
-            return "Low Occupancy";
-        } else if (occupancyPercentage < 70) {
-            return "Moderate Occupancy";
-        } else {
-            return "High Occupancy";
-        }
     }
 
     public static int getValidInteger(Scanner keyboardInput, int minimumValue) {
@@ -516,7 +506,7 @@ public class Main {
                 for (EventRecord event : events) {
                     double occupancyPercentage = analytics.getPercentOfHighOccupancy(event.getOccupancyAfter(), tracker.getHighOccupancy());
 
-                    boolean isHighOccupancy = returnLevelOfOccupancy(occupancyPercentage).equals("High Occupancy");
+                    boolean isHighOccupancy = tracker.returnLevelOfOccupancy(occupancyPercentage).equals("High Occupancy");
 
                     if (isHighOccupancy && !inhighOccupancy) {
                         highOccupancyStart = event.getEventDateTime();

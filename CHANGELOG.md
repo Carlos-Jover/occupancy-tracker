@@ -175,3 +175,16 @@ All notable changes to this project will be documented in this file.
 - Added an 'OccupancyTrackerGUI' class.
 - Added the display for the occupancy counter and occupancy counter percentage.
 - Added enter and exit buttons.
+
+## [0.21.0] Reset Button and GUI Reorganization
+
+### Added
+- Added a reset occupancy button to the GUI.
+- Added a `refreshDisplay` helper method to update occupancy information in the GUI.
+
+### Changed
+- Moved the `returnLevelOfOccupancy` method to the `Tracker` class.
+- Reorganized the GUI using panels and layout managers instead of manually positioning components.
+- Changed GUI components from static fields to instance fields.
+- Changed the GUI to receive and use a `Tracker` object.
+- Updated the GUI layout and spacing for a cleaner display and consistent button sizing.

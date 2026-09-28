@@ -206,4 +206,14 @@ public class Tracker {
 
         return matchingEvents;
     }
+
+    public String returnLevelOfOccupancy(double occupancyPercentage) {
+        if (occupancyPercentage < 40) {
+            return "Low Occupancy";
+        } else if (occupancyPercentage < 70) {
+            return "Moderate Occupancy";
+        } else {
+            return "High Occupancy";
+        }
+    }
 }
